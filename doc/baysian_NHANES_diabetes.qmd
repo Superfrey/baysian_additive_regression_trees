@@ -1,0 +1,84 @@
+---
+title: "BART_NHANES_DIABETES"
+format: html
+editor: visual
+---
+
+
+```{r}
+library(here)
+source(here("R/library_packages.R"))
+source(here::here("R/load_and_select_data_NHANES.R"))
+```
+
+```{r}
+
+
+data2 <- as.data.frame(na.omit(data_cvd))
+names(data2)
+summary(data2)
+predictors <- data2 %>% 
+    select(-(t2d))
+outcome <- as.factor(data2$t2d)
+```
+
+
+
+```{r}
+set.seed(1701)
+bartModel <- pbart(x.train = predictors,
+                   y.train = outcome,
+                   nskip = 100,
+                   ndpost = 1000,
+                   nkeeptreedraws = 1000,
+                   ntree = 20)
+summary(bartModel)
+btt <- extractTreeData(model = bartModel, data = data2)
+```
+
+```{r}
+vimpData <- viviBart(treeData = btt, out = 'vimp')
+vimpData[,1:3]
+```
+```{r}
+vimpPlot(treeData = btt, combineFact = FALSE)
+```
+```{r}
+plotTree(treeData = btt, treeNo = 1, iter = 1, plotType = "dendrogram")
+plotTree(treeData = btt, treeNo = 1, iter = 1, plotType = "icicle")
+```
+
+
+```{r}
+plotAllTrees(treeData = btt, treeNo = 20)
+```
+```{r}
+treeBarPlot(treeData = btt, topTrees = 10, iter = NULL, treeNo = NULL)
+```
+
+
+```{r}
+#localProcedure(model = bartModel,
+ #              data = data2,
+  #             numRep = 5,
+   #            numTreesRep = 5,
+    #           alpha = 0.5,
+     #          shift = FALSE)
+```
+# Diagnogsis
+```{r}
+bartDiag(model = bartModel, response = outcome, burnIn = 100, data = data2)
+```
+
+```{r}
+stdMat <- viviBartMatrix(btt,
+                          type = 'standard',
+                          metric = 'propMean')
+```
+
+```{r}
+viviBartPlot(stdMat, impLims = c(0, 0.16), angle = 90)
+```
+
+
+
