@@ -5,56 +5,85 @@ editor: visual
 ---
 
 ```{r}
+#| include: false
 library(here)
 source(here("R/library_packages.R"))
 #source(here::here("R/load_and_select_data_NHANES.R"))
 ```
 ```{r}
+#| include: false
 data_dum <- load(here("data-raw/cvd.rda"))
 names(cvd) <- tolower(names(cvd))
+cvd$sex_num <- as.numeric(cvd$sex)-1
 data_cvd <- cvd %>%
-    select(sex, age, smoke, drink, bmi, waist, sbp, dbp, hdlc,  hba1c) # add t2d
+    select(sex_num, age, bmi, waist, sbp, dbp, hdlc,  hba1c) # add t2d  smoke, drink,
+str(data_cvd)
 ```
 
+**Predictors included for determining HbA1c**
 
 ```{r}
+#| echo: false
+set.seed(321)
 data2 <- as.data.frame(na.omit(data_cvd))
+data2 <- data2 %>% 
+    sample_n(1000, replace = FALSE)
 
 predictors <- data2 %>% 
     select(-(hba1c))
+names(predictors)
 outcome <- data2$hba1c
-
 ```
 
+**BART model with 100 burn in, 20 trees, 300 intereations**
+
 ```{r}
-set.seed(1701)
+set.seed(321)
 bartModel <- wbart(x.train = predictors,
                    y.train = outcome,
                    nskip = 100,
                    ndpost = 300,
                    nkeeptreedraws = 300,
                    ntree = 20)
-summary(bartModel)
 btt <- extractTreeData(model = bartModel, data = data2)
 ```
+
+**Linear regression as reference**
+```{r}
+#| include: false
+lin_reg <- lm(hba1c ~ sex_num + age + bmi + waist + sbp + dbp + hdlc, data = data2) # + smoke + drink
+    
+summary(lin_reg)
+```
+
+**Extracting tree data and viewving the counts of included predictors**
 
 ```{r}
 vimpData <- viviBart(treeData = btt, combineFact = FALSE, out = 'vimp')
 vimpData[,1:3]
+sum(vimpData[,2])
 ```
+
+**Ranking of the predictors**
 
 ```{r}
 vimpPlot(treeData = btt, combineFact = FALSE)
 ```
 
+**Exploring a random selected tree structure**
+
 ```{r}
-plotTree(treeData = btt, treeNo = 12, iter = 299, plotType = "dendrogram")
+plotTree(treeData = btt, treeNo = 12, iter = 100, plotType = "dendrogram")
 plotTree(treeData = btt, treeNo = 1, iter = 1, plotType = "icicle")
 ```
+
+**Tree structures in tree number 20**
 
 ```{r}
 plotAllTrees(treeData = btt, treeNo = 20)
 ```
+
+**Top 10 most common tree stuctures**
 
 ```{r}
 treeBarPlot(treeData = btt, topTrees = 10, iter = NULL, treeNo = NULL)
@@ -69,18 +98,22 @@ treeBarPlot(treeData = btt, topTrees = 10, iter = NULL, treeNo = NULL)
      #          shift = FALSE)
 ```
 
-# Diagnogsis
-
-```{r}
-bartDiag(model = bartModel, response = outcome, burnIn = 100, data = data2)
-```
-
 ```{r}
 stdMat <- viviBartMatrix(btt,
                           type = 'standard',
                           metric = 'propMean')
 ```
 
+**Interactions between predictors**
+
 ```{r}
 viviBartPlot(stdMat, impLims = c(0, 0.16), angle = 90)
 ```
+
+**Diagnogsis of model**
+
+```{r}
+bartDiag(model = bartModel, response = outcome, burnIn = 100, data = data2)
+```
+
+

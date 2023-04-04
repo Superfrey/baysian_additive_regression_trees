@@ -122,328 +122,127 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
+<p><strong>Predictors included for determining HbA1c</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>here() starts at /Users/au614370/Desktop/r_directory/baysian_additive_regression_trees</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"R/library_packages.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: ggplot2</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: lattice</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>corrplot 0.92 loaded</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: Matrix</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loaded glmnet 4.1-6</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-✔ tibble  3.2.0     ✔ dplyr   1.1.0
-✔ tidyr   1.3.0     ✔ stringr 1.5.0
-✔ readr   2.1.4     ✔ forcats 0.5.2
-✔ purrr   1.0.1     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::combine() masks gridExtra::combine()
-✖ tidyr::expand()  masks Matrix::expand()
-✖ dplyr::filter()  masks stats::filter()
-✖ dplyr::lag()     masks stats::lag()
-✖ purrr::lift()    masks caret::lift()
-✖ tidyr::pack()    masks Matrix::pack()
-✖ tidyr::unpack()  masks Matrix::unpack()
-Loading required package: nlme
-
-
-Attaching package: 'nlme'
-
-
-The following object is masked from 'package:dplyr':
-
-    collapse
-
-
-Loading required package: nnet
-
-Loading required package: survival
-
-
-Attaching package: 'survival'
-
-
-The following object is masked from 'package:caret':
-
-    cluster
-
-
-Registered S3 methods overwritten by 'registry':
-  method               from 
-  print.registry_field proxy
-  print.registry_entry proxy
-
-Registered S3 method overwritten by 'seriation':
-  method         from 
-  reorder.hclust gclus
-
-
-Attaching package: 'dbarts'
-
-
-The following object is masked from 'package:tidyr':
-
-    extract</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R/load_and_select_data_NHANES.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>tibble [10,000 × 76] (S3: tbl_df/tbl/data.frame)
- $ ID              : int [1:10000] 51624 51624 51624 51625 51630 51638 51646 51647 51647 51647 ...
- $ SurveyYr        : Factor w/ 2 levels "2009_10","2011_12": 1 1 1 1 1 1 1 1 1 1 ...
- $ Gender          : Factor w/ 2 levels "female","male": 2 2 2 2 1 2 2 1 1 1 ...
- $ Age             : int [1:10000] 34 34 34 4 49 9 8 45 45 45 ...
- $ AgeDecade       : Factor w/ 8 levels " 0-9"," 10-19",..: 4 4 4 1 5 1 1 5 5 5 ...
- $ AgeMonths       : int [1:10000] 409 409 409 49 596 115 101 541 541 541 ...
- $ Race1           : Factor w/ 5 levels "Black","Hispanic",..: 4 4 4 5 4 4 4 4 4 4 ...
- $ Race3           : Factor w/ 6 levels "Asian","Black",..: NA NA NA NA NA NA NA NA NA NA ...
- $ Education       : Factor w/ 5 levels "8th Grade","9 - 11th Grade",..: 3 3 3 NA 4 NA NA 5 5 5 ...
- $ MaritalStatus   : Factor w/ 6 levels "Divorced","LivePartner",..: 3 3 3 NA 2 NA NA 3 3 3 ...
- $ HHIncome        : Factor w/ 12 levels " 0-4999"," 5000-9999",..: 6 6 6 5 7 11 9 11 11 11 ...
- $ HHIncomeMid     : int [1:10000] 30000 30000 30000 22500 40000 87500 60000 87500 87500 87500 ...
- $ Poverty         : num [1:10000] 1.36 1.36 1.36 1.07 1.91 1.84 2.33 5 5 5 ...
- $ HomeRooms       : int [1:10000] 6 6 6 9 5 6 7 6 6 6 ...
- $ HomeOwn         : Factor w/ 3 levels "Own","Rent","Other": 1 1 1 1 2 2 1 1 1 1 ...
- $ Work            : Factor w/ 3 levels "Looking","NotWorking",..: 2 2 2 NA 2 NA NA 3 3 3 ...
- $ Weight          : num [1:10000] 87.4 87.4 87.4 17 86.7 29.8 35.2 75.7 75.7 75.7 ...
- $ Length          : num [1:10000] NA NA NA NA NA NA NA NA NA NA ...
- $ HeadCirc        : num [1:10000] NA NA NA NA NA NA NA NA NA NA ...
- $ Height          : num [1:10000] 165 165 165 105 168 ...
- $ BMI             : num [1:10000] 32.2 32.2 32.2 15.3 30.6 ...
- $ BMICatUnder20yrs: Factor w/ 4 levels "UnderWeight",..: NA NA NA NA NA NA NA NA NA NA ...
- $ BMI_WHO         : Factor w/ 4 levels "12.0_18.5","18.5_to_24.9",..: 4 4 4 1 4 1 2 3 3 3 ...
- $ Pulse           : int [1:10000] 70 70 70 NA 86 82 72 62 62 62 ...
- $ BPSysAve        : int [1:10000] 113 113 113 NA 112 86 107 118 118 118 ...
- $ BPDiaAve        : int [1:10000] 85 85 85 NA 75 47 37 64 64 64 ...
- $ BPSys1          : int [1:10000] 114 114 114 NA 118 84 114 106 106 106 ...
- $ BPDia1          : int [1:10000] 88 88 88 NA 82 50 46 62 62 62 ...
- $ BPSys2          : int [1:10000] 114 114 114 NA 108 84 108 118 118 118 ...
- $ BPDia2          : int [1:10000] 88 88 88 NA 74 50 36 68 68 68 ...
- $ BPSys3          : int [1:10000] 112 112 112 NA 116 88 106 118 118 118 ...
- $ BPDia3          : int [1:10000] 82 82 82 NA 76 44 38 60 60 60 ...
- $ Testosterone    : num [1:10000] NA NA NA NA NA NA NA NA NA NA ...
- $ DirectChol      : num [1:10000] 1.29 1.29 1.29 NA 1.16 1.34 1.55 2.12 2.12 2.12 ...
- $ TotChol         : num [1:10000] 3.49 3.49 3.49 NA 6.7 4.86 4.09 5.82 5.82 5.82 ...
- $ UrineVol1       : int [1:10000] 352 352 352 NA 77 123 238 106 106 106 ...
- $ UrineFlow1      : num [1:10000] NA NA NA NA 0.094 ...
- $ UrineVol2       : int [1:10000] NA NA NA NA NA NA NA NA NA NA ...
- $ UrineFlow2      : num [1:10000] NA NA NA NA NA NA NA NA NA NA ...
- $ Diabetes        : Factor w/ 2 levels "No","Yes": 1 1 1 1 1 1 1 1 1 1 ...
- $ DiabetesAge     : int [1:10000] NA NA NA NA NA NA NA NA NA NA ...
- $ HealthGen       : Factor w/ 5 levels "Excellent","Vgood",..: 3 3 3 NA 3 NA NA 2 2 2 ...
- $ DaysPhysHlthBad : int [1:10000] 0 0 0 NA 0 NA NA 0 0 0 ...
- $ DaysMentHlthBad : int [1:10000] 15 15 15 NA 10 NA NA 3 3 3 ...
- $ LittleInterest  : Factor w/ 3 levels "None","Several",..: 3 3 3 NA 2 NA NA 1 1 1 ...
- $ Depressed       : Factor w/ 3 levels "None","Several",..: 2 2 2 NA 2 NA NA 1 1 1 ...
- $ nPregnancies    : int [1:10000] NA NA NA NA 2 NA NA 1 1 1 ...
- $ nBabies         : int [1:10000] NA NA NA NA 2 NA NA NA NA NA ...
- $ Age1stBaby      : int [1:10000] NA NA NA NA 27 NA NA NA NA NA ...
- $ SleepHrsNight   : int [1:10000] 4 4 4 NA 8 NA NA 8 8 8 ...
- $ SleepTrouble    : Factor w/ 2 levels "No","Yes": 2 2 2 NA 2 NA NA 1 1 1 ...
- $ PhysActive      : Factor w/ 2 levels "No","Yes": 1 1 1 NA 1 NA NA 2 2 2 ...
- $ PhysActiveDays  : int [1:10000] NA NA NA NA NA NA NA 5 5 5 ...
- $ TVHrsDay        : Factor w/ 7 levels "0_hrs","0_to_1_hr",..: NA NA NA NA NA NA NA NA NA NA ...
- $ CompHrsDay      : Factor w/ 7 levels "0_hrs","0_to_1_hr",..: NA NA NA NA NA NA NA NA NA NA ...
- $ TVHrsDayChild   : int [1:10000] NA NA NA 4 NA 5 1 NA NA NA ...
- $ CompHrsDayChild : int [1:10000] NA NA NA 1 NA 0 6 NA NA NA ...
- $ Alcohol12PlusYr : Factor w/ 2 levels "No","Yes": 2 2 2 NA 2 NA NA 2 2 2 ...
- $ AlcoholDay      : int [1:10000] NA NA NA NA 2 NA NA 3 3 3 ...
- $ AlcoholYear     : int [1:10000] 0 0 0 NA 20 NA NA 52 52 52 ...
- $ SmokeNow        : Factor w/ 2 levels "No","Yes": 1 1 1 NA 2 NA NA NA NA NA ...
- $ Smoke100        : Factor w/ 2 levels "No","Yes": 2 2 2 NA 2 NA NA 1 1 1 ...
- $ Smoke100n       : Factor w/ 2 levels "Non-Smoker","Smoker": 2 2 2 NA 2 NA NA 1 1 1 ...
- $ SmokeAge        : int [1:10000] 18 18 18 NA 38 NA NA NA NA NA ...
- $ Marijuana       : Factor w/ 2 levels "No","Yes": 2 2 2 NA 2 NA NA 2 2 2 ...
- $ AgeFirstMarij   : int [1:10000] 17 17 17 NA 18 NA NA 13 13 13 ...
- $ RegularMarij    : Factor w/ 2 levels "No","Yes": 1 1 1 NA 1 NA NA 1 1 1 ...
- $ AgeRegMarij     : int [1:10000] NA NA NA NA NA NA NA NA NA NA ...
- $ HardDrugs       : Factor w/ 2 levels "No","Yes": 2 2 2 NA 2 NA NA 1 1 1 ...
- $ SexEver         : Factor w/ 2 levels "No","Yes": 2 2 2 NA 2 NA NA 2 2 2 ...
- $ SexAge          : int [1:10000] 16 16 16 NA 12 NA NA 13 13 13 ...
- $ SexNumPartnLife : int [1:10000] 8 8 8 NA 10 NA NA 20 20 20 ...
- $ SexNumPartYear  : int [1:10000] 1 1 1 NA 1 NA NA 0 0 0 ...
- $ SameSex         : Factor w/ 2 levels "No","Yes": 1 1 1 NA 2 NA NA 2 2 2 ...
- $ SexOrientation  : Factor w/ 3 levels "Bisexual","Heterosexual",..: 2 2 2 NA 2 NA NA 1 1 1 ...
- $ PregnantNow     : Factor w/ 3 levels "Yes","No","Unknown": NA NA NA NA NA NA NA NA NA NA ...
-tibble [10,000 × 15] (S3: tbl_df/tbl/data.frame)
- $ ID            : int [1:10000] 51624 51624 51624 51625 51630 51638 51646 51647 51647 51647 ...
- $ Gender        : Factor w/ 2 levels "female","male": 2 2 2 2 1 2 2 1 1 1 ...
- $ Age           : int [1:10000] 34 34 34 4 49 9 8 45 45 45 ...
- $ AgeDecade     : Factor w/ 8 levels " 0-9"," 10-19",..: 4 4 4 1 5 1 1 5 5 5 ...
- $ Education     : Factor w/ 5 levels "8th Grade","9 - 11th Grade",..: 3 3 3 NA 4 NA NA 5 5 5 ...
- $ SmokeNow      : Factor w/ 2 levels "No","Yes": 1 1 1 NA 2 NA NA NA NA NA ...
- $ BMI           : num [1:10000] 32.2 32.2 32.2 15.3 30.6 ...
- $ HeadCirc      : num [1:10000] NA NA NA NA NA NA NA NA NA NA ...
- $ BPDiaAve      : int [1:10000] 85 85 85 NA 75 47 37 64 64 64 ...
- $ BPSysAve      : int [1:10000] 113 113 113 NA 112 86 107 118 118 118 ...
- $ Pulse         : int [1:10000] 70 70 70 NA 86 82 72 62 62 62 ...
- $ TotChol       : num [1:10000] 3.49 3.49 3.49 NA 6.7 4.86 4.09 5.82 5.82 5.82 ...
- $ Testosterone  : num [1:10000] NA NA NA NA NA NA NA NA NA NA ...
- $ PhysActiveDays: int [1:10000] NA NA NA NA NA NA NA 5 5 5 ...
- $ Poverty       : num [1:10000] 1.36 1.36 1.36 1.07 1.91 1.84 2.33 5 5 5 ...</code></pre>
+<pre><code>[1] "sex_num" "age"     "bmi"     "waist"   "sbp"     "dbp"     "hdlc"   </code></pre>
 </div>
 </div>
+<p><strong>BART model with 100 burn in, 20 trees, 300 intereations</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>data1 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(data1)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(data1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>'data.frame':   2947 obs. of  10 variables:
- $ ID       : int  51624 51624 51624 51630 51654 51666 51677 51678 51691 51702 ...
- $ Age      : int  34 34 34 49 66 58 33 60 57 44 ...
- $ Gender   : Factor w/ 2 levels "female","male": 2 2 2 1 2 1 2 2 1 2 ...
- $ Education: Factor w/ 5 levels "8th Grade","9 - 11th Grade",..: 3 3 3 4 4 3 3 3 3 2 ...
- $ SmokeNow : Factor w/ 2 levels "No","Yes": 1 1 1 2 1 2 1 1 1 2 ...
- $ BMI      : num  32.2 32.2 32.2 30.6 23.7 ...
- $ BPDiaAve : int  85 85 85 75 63 83 74 100 89 88 ...
- $ BPSysAve : int  113 113 113 112 111 127 128 152 122 144 ...
- $ Pulse    : int  70 70 70 86 60 94 96 84 70 80 ...
- $ TotChol  : num  3.49 3.49 3.49 6.7 4.99 4.78 5.59 6.39 5.04 5.61 ...
- - attr(*, "na.action")= 'omit' Named int [1:7053] 4 6 7 8 9 10 12 13 14 16 ...
-  ..- attr(*, "names")= chr [1:7053] "4" "6" "7" "8" ...</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">&lt;-</span> data1 <span class="sc">%&gt;%</span> </span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>(ID))</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>predictors <span class="ot">&lt;-</span> data2 <span class="sc">%&gt;%</span> </span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>(Pulse))</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>outcome <span class="ot">&lt;-</span> data2<span class="sc">$</span>Pulse</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1701</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>bartModel <span class="ot">&lt;-</span> <span class="fu">wbart</span>(<span class="at">x.train =</span> predictors,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y.train =</span> outcome,</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">nskip =</span> <span class="dv">100</span>,</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">ndpost =</span> <span class="dv">1000</span>,</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">nkeeptreedraws =</span> <span class="dv">1000</span>,</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">ntree =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">321</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>bartModel <span class="ot">&lt;-</span> <span class="fu">wbart</span>(<span class="at">x.train =</span> predictors,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y.train =</span> outcome,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">nskip =</span> <span class="dv">100</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">ndpost =</span> <span class="dv">300</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">nkeeptreedraws =</span> <span class="dv">300</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">ntree =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>*****Into main of wbart
 *****Data:
-data:n,p,np: 2947, 14, 0
-y1,yn: -2.921615, -4.921615
-x1,x[n*p]: 34.000000, 3.900000
+data:n,p,np: 1000, 7, 0
+y1,yn: -0.223400, -0.523400
+x1,x[n*p]: 0.000000, 1.340000
 *****Number of Trees: 20
-*****Number of Cut Points: 60 ... 100
-*****burn and ndpost: 100, 1000
-*****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,4.360333,3.000000,26.371817
-*****sigma: 11.635501
+*****Number of Cut Points: 1 ... 84
+*****burn and ndpost: 100, 300
+*****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,0.709952,3.000000,0.264568
+*****sigma: 1.165423
 *****w (weights): 1.000000 ... 1.000000
-*****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,14,0
-*****nkeeptrain,nkeeptest,nkeeptestme,nkeeptreedraws: 1000,1000,1000,1000
+*****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,7,0
+*****nkeeptrain,nkeeptest,nkeeptestme,nkeeptreedraws: 300,300,300,300
 *****printevery: 100
 *****skiptr,skipte,skipteme,skiptreedraws: 1,1,1,1
 
 MCMC
-done 0 (out of 1100)
-done 100 (out of 1100)
-done 200 (out of 1100)
-done 300 (out of 1100)
-done 400 (out of 1100)
-done 500 (out of 1100)
-done 600 (out of 1100)
-done 700 (out of 1100)
-done 800 (out of 1100)
-done 900 (out of 1100)
-done 1000 (out of 1100)
+done 0 (out of 400)
+done 100 (out of 400)
+done 200 (out of 400)
+done 300 (out of 400)
 time: 1s
 check counts
-trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000</code></pre>
+trcnt,tecnt,temecnt,treedrawscnt: 300,0,0,300</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bartModel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>btt <span class="ot">&lt;-</span> <span class="fu">extractTreeData</span>(<span class="at">model =</span> bartModel, <span class="at">data =</span> data2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Linear regression as reference</strong></p>
+<p><strong>Extracting tree data and viewving the counts of included predictors</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>vimpData <span class="ot">&lt;-</span> <span class="fu">viviBart</span>(<span class="at">treeData =</span> btt, <span class="at">combineFact =</span> <span class="cn">FALSE</span>, <span class="at">out =</span> <span class="st">'vimp'</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>vimpData[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                Length  Class     Mode   
-sigma              1100 -none-    numeric
-yhat.train.mean    2947 -none-    numeric
-yhat.train      2947000 -none-    numeric
-yhat.test.mean        0 -none-    numeric
-yhat.test             0 -none-    numeric
-varcount          14000 -none-    numeric
-varprob           14000 -none-    numeric
-treedraws             2 -none-    list   
-proc.time             5 proc_time numeric
-mu                    1 -none-    numeric
-varcount.mean        14 -none-    numeric
-varprob.mean         14 -none-    numeric
-rm.const             14 -none-    numeric</code></pre>
+<pre><code>        variable count   propMean
+sex_num  sex_num  1422 0.22430265
+age          age   950 0.14903917
+bmi          bmi   428 0.06744396
+waist      waist  1191 0.18907585
+sbp          sbp   967 0.15320600
+dbp          dbp   489 0.07567876
+hdlc        hdlc   892 0.14125361</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>btt <span class="ot">&lt;-</span> <span class="fu">extractTreeData</span>(<span class="at">model =</span> bartModel, <span class="at">data =</span> data2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>vimpData <span class="ot">&lt;-</span> <span class="fu">viviBart</span>(<span class="at">treeData =</span> btt, <span class="at">combineFact =</span> <span class="cn">FALSE</span>, <span class="at">out =</span> <span class="st">'vimp'</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>vimpData[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(vimpData[,<span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>             variable count   propMean
-Age               Age  5686 0.14367286
-Gender1       Gender1   820 0.02060587
-Gender2       Gender2  2649 0.06659733
-Education1 Education1  1116 0.02848426
-Education2 Education2  2532 0.06379161
-Education3 Education3  2010 0.05204801
-Education4 Education4  2237 0.05678880
-Education5 Education5  1201 0.03027383
-SmokeNow1   SmokeNow1  2227 0.05510331
-SmokeNow2   SmokeNow2  3154 0.08046386
-BMI               BMI  3992 0.10126448
-BPDiaAve     BPDiaAve  6814 0.17291091
-BPSysAve     BPSysAve  3005 0.07569185
-TotChol       TotChol  2076 0.05230300</code></pre>
+<pre><code>[1] 6339</code></pre>
 </div>
 </div>
+<p><strong>Ranking of the predictors</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vimpPlot</span>(<span class="at">treeData =</span> btt, <span class="at">combineFact =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotTree</span>(<span class="at">treeData =</span> btt, <span class="at">treeNo =</span> <span class="dv">1</span>, <span class="at">iter =</span> <span class="dv">1</span>, <span class="at">plotType =</span> <span class="st">"dendrogram"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotTree</span>(<span class="at">treeData =</span> btt, <span class="at">treeNo =</span> <span class="dv">1</span>, <span class="at">iter =</span> <span class="dv">1</span>, <span class="at">plotType =</span> <span class="st">"icicle"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAllTrees</span>(<span class="at">treeData =</span> btt, <span class="at">treeNo =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vimpPlot</span>(<span class="at">treeData =</span> btt, <span class="at">combineFact =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p><strong>Exploring a random selected tree structure</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">treeBarPlot</span>(<span class="at">treeData =</span> btt, <span class="at">topTrees =</span> <span class="dv">10</span>, <span class="at">iter =</span> <span class="cn">NULL</span>, <span class="at">treeNo =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotTree</span>(<span class="at">treeData =</span> btt, <span class="at">treeNo =</span> <span class="dv">12</span>, <span class="at">iter =</span> <span class="dv">100</span>, <span class="at">plotType =</span> <span class="st">"dendrogram"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotTree</span>(<span class="at">treeData =</span> btt, <span class="at">treeNo =</span> <span class="dv">1</span>, <span class="at">iter =</span> <span class="dv">1</span>, <span class="at">plotType =</span> <span class="st">"icicle"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Tree structures in tree number 20</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAllTrees</span>(<span class="at">treeData =</span> btt, <span class="at">treeNo =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Top 10 most common tree stuctures</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">treeBarPlot</span>(<span class="at">treeData =</span> btt, <span class="at">topTrees =</span> <span class="dv">10</span>, <span class="at">iter =</span> <span class="cn">NULL</span>, <span class="at">treeNo =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Both iter and treeNo are NULL. Recommend filtering trees</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#localProcedure(model = bartModel,</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a> <span class="co">#              data = data2,</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#             numRep = 5,</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>   <span class="co">#            numTreesRep = 5,</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">#           alpha = 0.5,</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>     <span class="co">#          shift = FALSE)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#localProcedure(model = bartModel,</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a> <span class="co">#              data = data2,</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#             numRep = 5,</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>   <span class="co">#            numTreesRep = 5,</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">#           alpha = 0.5,</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>     <span class="co">#          shift = FALSE)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="diagnogsis" class="level1">
-<h1>Diagnogsis</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartDiag</span>(<span class="at">model =</span> bartModel, <span class="at">response =</span> outcome, <span class="at">burnIn =</span> <span class="dv">100</span>, <span class="at">data =</span> data2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>stdMat <span class="ot">&lt;-</span> <span class="fu">viviBartMatrix</span>(btt,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">type =</span> <span class="st">'standard'</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">metric =</span> <span class="st">'propMean'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Interactions between predictors</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">viviBartPlot</span>(stdMat, <span class="at">impLims =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.16</span>), <span class="at">angle =</span> <span class="dv">90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Diagnogsis of model</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartDiag</span>(<span class="at">model =</span> bartModel, <span class="at">response =</span> outcome, <span class="at">burnIn =</span> <span class="dv">100</span>, <span class="at">data =</span> data2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: `stat(index)` was deprecated in ggplot2 3.4.0.
 ℹ Please use `after_stat(index)` instead.
@@ -451,21 +250,9 @@ TotChol       TotChol  2076 0.05230300</code></pre>
   Please report the issue to the authors.</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>stdMat <span class="ot">&lt;-</span> <span class="fu">viviBartMatrix</span>(btt,</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">type =</span> <span class="st">'standard'</span>,</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">metric =</span> <span class="st">'propMean'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">viviBartPlot</span>(stdMat, <span class="at">impLims =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.16</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="BART_example_NHANES_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-</section>
 
 </main>
 <!-- /main column -->
