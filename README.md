@@ -2,7 +2,7 @@ TODO: Add more to the title of your project here
 
 # baysian_additive_regression_trees:
 
-This is an repository working with Baysian Additive Regression Trees, for predictions models puposes
+This is an repository working with Baysian Additive Regression Trees, for predictions models purposes
 
 # Brief description of folder and file contents
 
