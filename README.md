@@ -2,19 +2,17 @@ TODO: Add more to the title of your project here
 
 # baysian_additive_regression_trees:
 
-TODO: Give a brief description of what your project is about
-
-This project...
+This is an repository working with Baysian Additive Regression Trees, for predictions models puposes
 
 # Brief description of folder and file contents
 
-TODO: As project evolves, add brief description of what is inside the data, doc and R folders.
+Data and code for examples, more to come for interested.
 
 The following folders contain:
 
-- `data/`:
-- `doc/`:
-- `R/`:
+- `data-raw/`: NHANES data
+- `doc/`: Quarto files for en example of analysis with visaulization tool
+- `R/`: Script for package loading and loading of data
 
 # Installing project R package dependencies
 
